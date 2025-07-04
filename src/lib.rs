@@ -77,9 +77,7 @@ pub unsafe extern "stdcall" fn DllMain(module: HMODULE, reason: u32, _res: *cons
 
     match reason {
         DLL_PROCESS_ATTACH => {
-            
                 CreateThread(std::ptr::null_mut(), 0, Some(init), std::ptr::null_mut(), 0, std::ptr::null_mut());
-            
         },
         DLL_PROCESS_DETACH  => {
             if let Some(orig_dll_handle) = ORIG_DLL_HANDLE {
