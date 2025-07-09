@@ -12,7 +12,12 @@ build.bat
 copy version.dll C:\Nexon\ARAD\version.dll
 ```
 
-3. Stat Arad normaly
+3. Copy Original DLL
+```
+copy C:\Windows\System32\version.dll C:\Nexon\ARAD\version.dll_
+```
+
+4. Stat Arad normaly
 
 ### Build Requirements
 - [Rust](https://www.rust-lang.org/)
