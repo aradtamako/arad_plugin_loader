@@ -178,7 +178,6 @@ unsafe extern "system" fn init(_: *mut c_void) -> u32 {
         load_plugin()
     }
 
-
     0
 }
 
