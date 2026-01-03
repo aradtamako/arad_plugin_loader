@@ -20,6 +20,8 @@ use std::arch::x86_64::_mm_pause;
 use std::arch::x86::_mm_pause;
 use std::ffi::OsString;
 use std::os::windows::prelude::{AsRawHandle, OsStringExt};
+use std::thread::{self, sleep};
+use std::time::Duration;
 use winapi::ctypes::c_void;
 use winapi::shared::minwindef::{FARPROC, HINSTANCE, HMODULE, MAX_PATH};
 use winapi::shared::ntdef::LPCSTR;
@@ -175,6 +177,7 @@ unsafe extern "system" fn init(_: *mut c_void) -> u32 {
 
     let isAradGameProcess = get_current_process_name().unwrap().ends_with("ARAD.exe");
     if isAradGameProcess {
+        sleep(Duration::from_secs(5));
         load_plugin()
     }
 
