@@ -196,7 +196,19 @@ fn load_plugin() {
             if let Some(ext) = path.extension() {
                 if ext == "dll" {
                     unsafe {
-                        LoadLibraryA(path.to_str().unwrap().as_ptr() as *const i8);
+                        let hModule = LoadLibraryA(path.to_str().unwrap().as_ptr() as *const i8);
+                        if hModule.is_null() {
+                            let errorCode = GetLastError();
+                            if errorCode != 0 {
+                                let error_message = format!("Failed to load plugin: {:?}, ErrorCode: {}", path, errorCode);
+                                MessageBoxA(
+                                    std::ptr::null_mut(),
+                                    error_message.as_bytes().as_ptr() as LPCSTR,
+                                    "ARAD_PLUGIN_LOADER\0".as_ptr() as LPCSTR,
+                                    MB_OK,
+                                );
+                            }
+                        }
                     }
                 }
             }
