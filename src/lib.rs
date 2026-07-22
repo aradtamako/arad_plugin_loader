@@ -20,7 +20,7 @@ use std::arch::x86_64::_mm_pause;
 use std::arch::x86::_mm_pause;
 use std::ffi::OsString;
 use std::os::windows::prelude::{AsRawHandle, OsStrExt, OsStringExt};
-use std::thread::{self, sleep};
+use std::thread::{sleep};
 use std::time::Duration;
 use winapi::ctypes::c_void;
 use winapi::shared::minwindef::{FARPROC, HINSTANCE, HMODULE, MAX_PATH};
