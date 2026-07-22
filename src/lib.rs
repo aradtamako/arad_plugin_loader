@@ -19,7 +19,7 @@ use std::arch::x86_64::_mm_pause;
 #[cfg(target_arch="x86")]
 use std::arch::x86::_mm_pause;
 use std::ffi::OsString;
-use std::os::windows::prelude::{AsRawHandle, OsStringExt};
+use std::os::windows::prelude::{AsRawHandle, OsStrExt, OsStringExt};
 use std::thread::{self, sleep};
 use std::time::Duration;
 use winapi::ctypes::c_void;
@@ -28,7 +28,7 @@ use winapi::shared::ntdef::LPCSTR;
 // use winapi::um::consoleapi::AllocConsole;
 use winapi::um::errhandlingapi::GetLastError;
 use winapi::um::libloaderapi::{
-    DisableThreadLibraryCalls, FreeLibrary, GetModuleFileNameW, LoadLibraryA,
+    DisableThreadLibraryCalls, FreeLibrary, GetModuleFileNameW, LoadLibraryA, LoadLibraryW,
 };
 use winapi::um::processenv::SetStdHandle;
 use winapi::um::processthreadsapi::{
@@ -196,7 +196,17 @@ fn load_plugin() {
             if let Some(ext) = path.extension() {
                 if ext == "dll" {
                     unsafe {
-                        let hModule = LoadLibraryA(path.to_str().unwrap().as_ptr() as *const i8);
+                        // Build a NUL-terminated wide string. LoadLibraryA/W require a
+                        // NUL-terminated C string; passing `&str::as_ptr()` (not
+                        // NUL-terminated) makes the loader read past the path into
+                        // arbitrary memory, so injection succeeded or failed at random.
+                        // LoadLibraryW also handles non-ASCII (e.g. Japanese) paths.
+                        let wide_path: Vec<u16> = path
+                            .as_os_str()
+                            .encode_wide()
+                            .chain(std::iter::once(0))
+                            .collect();
+                        let hModule = LoadLibraryW(wide_path.as_ptr());
                         if hModule.is_null() {
                             let errorCode = GetLastError();
                             if errorCode != 0 {
